@@ -1,24 +1,33 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useLayoutEffect} from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Buttonheader from '../components/Buttonheader';
 import icons from '../constants/icons';
 import {COLOR, FONTS, SIZE} from '../constants/theme';
 import images from '../constants/images';
-import LinearGradient from 'react-native-linear-gradient';
 import GradientButton from '../components/GradientButton';
 import InputText from '../components/InputText';
+import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 
 const Login = () => {
   const nav = useNavigation();
+  const {getItem, setItem} = useAsyncStorage('AuthLogin');
+  const [authLogin, setAuthLogin] = useState(null);
+  const [formInput, setFormInput] = useState({
+    username: '',
+    password: '',
+  });
+
+  const getFromAsyncStorage = async () => {
+    const item = await getItem();
+    setAuthLogin(JSON.parse(item));
+  };
+
+  const setItemAsyncStorage = async (item) => {
+    const data = JSON.stringify(item);
+    await setItem(data);
+  };
   useLayoutEffect(() => {
     nav.setOptions({
       title: null,
@@ -29,10 +38,9 @@ const Login = () => {
     });
   });
 
-  const [formInput, setFormInput] = useState({
-    username: '',
-    password: '',
-  });
+  useEffect(() => {
+    getFromAsyncStorage();
+  }, []);
 
   const handleFormInput = (value, name) => {
     // console.log(value, name);
@@ -41,16 +49,14 @@ const Login = () => {
       [name]: value,
     });
   };
-  console.log(formInput);
+  // console.log(formInput);
+  const handleSubmit = () => {
+    setItemAsyncStorage(formInput);
+    nav.navigate('Home');
+    console.log('async Storage', authLogin);
+  };
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: COLOR.white,
-        paddingHorizontal: SIZE.padding * 1.5,
-        justifyContent: 'center',
-        paddingTop: SIZE.padding * 2,
-      }}>
+    <View style={styles.container}>
       <View style={{marginTop: -SIZE.padding * 3}}>
         <Image
           source={images.login}
@@ -80,20 +86,26 @@ const Login = () => {
           secureTextEntry={true}
         />
       </View>
-      <GradientButton text="Sign In" onPress={() => nav.navigate('Home')} />
-      <Text
-        style={{
-          ...FONTS.body3,
-          color: COLOR.gray,
-          textAlign: 'center',
-          marginTop: SIZE.padding,
-        }}>
-        Forgot Password
-      </Text>
+      <GradientButton text="Sign In" onPress={handleSubmit} />
+      <Text style={styles.forgot}>Forgot Password</Text>
     </View>
   );
 };
 
 export default Login;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLOR.white,
+    paddingHorizontal: SIZE.padding * 1.5,
+    justifyContent: 'center',
+    paddingTop: SIZE.padding * 2,
+  },
+  forgot: {
+    ...FONTS.body3,
+    color: COLOR.gray,
+    textAlign: 'center',
+    marginTop: SIZE.padding,
+  },
+});

@@ -14,6 +14,7 @@ import TabNavigation from './components/TabNavigation';
 import Destinationdetail from './screen/Destinationdetail';
 import Buttonheader from './components/Buttonheader';
 import Login from './screen/Login';
+import {useAsyncStorage} from '@react-native-async-storage/async-storage';
 const Stack = createStackNavigator();
 const theme = {
   ...DefaultTheme,
@@ -33,7 +34,7 @@ const App = () => {
         <Stack.Screen
           name="Home"
           component={TabNavigation}
-          options={homeScreenOptions}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -41,19 +42,3 @@ const App = () => {
 };
 
 export default App;
-
-const homeScreenOptions = {
-  title: null,
-  headerStyle: {
-    backgroundColor: COLOR.white,
-    elevation: 0,
-  },
-  headerLeft: ({onPress}) => (
-    <Buttonheader icon={icons.back} label="Back" onPress={onPress} />
-  ),
-  headerRight: ({onPress}) => (
-    <View style={{marginRight: SIZE.padding}}>
-      <Buttonheader icon={icons.menu} />
-    </View>
-  ),
-};

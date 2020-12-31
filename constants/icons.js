@@ -20,6 +20,7 @@ const user = require('../assets/icons/user_icon.png');
 const villa = require('../assets/icons/villa_icon.png');
 const wind = require('../assets/icons/wind_icon.png');
 const edit = require('../assets/icons/edit.png');
+const power = require('../assets/icons/power.png');
 
 export default {
   airplane,
@@ -44,4 +45,5 @@ export default {
   villa,
   wind,
   edit,
+  power,
 };
